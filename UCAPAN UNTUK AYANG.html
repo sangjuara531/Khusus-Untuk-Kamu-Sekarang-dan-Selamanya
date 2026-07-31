@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Girlfriend Day, My Love! ❤️</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      --primary: #ff4d6d;
+      --primary-dark: #c9184a;
+      --primary-light: #ffb3c1;
+      --bg-cream: #fff0f3;
+      --text-dark: #2b2d42;
+      --text-muted: #590d22;
+      --glass-bg: rgba(255, 255, 255, 0.92);
+      --glass-border: rgba(255, 179, 193, 0.4);
+      --shadow-romantic: 0 15px 35px rgba(201, 24, 74, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-cream);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .audio-control {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--glass-border);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-dark);
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+    }
+
+    .audio-control.playing {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* --- LAYAR PEMBUKA (SPLASH SCREEN) --- */
+    #splash-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-cream);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .envelope-icon {
+      font-size: 4rem;
+      color: var(--primary);
+      margin-bottom: 20px;
+      animation: float 2s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .btn-open {
+      padding: 15px 40px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, #ff4d6d, #c9184a);
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(201, 24, 74, 0.35);
+      transition: transform 0.2s;
+    }
+
+    .btn-open:hover {
+      transform: scale(1.05);
+    }
+
+    .app-container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 800px;
+      padding: 20px;
+      margin: 20px auto;
+    }
+
+    .screen {
+      display: none;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .screen.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .romantic-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: 28px;
+      padding: 40px 30px;
+      box-shadow: var(--shadow-romantic);
+      text-align: center;
+      position: relative;
+      min-height: 420px;
+    }
+
+    h1, h2 {
+      font-family: 'Playfair Display', serif;
+      color: var(--primary-dark);
+    }
+
+    .script-font {
+      font-family: 'Dancing Script', cursive;
+    }
+
+    /* --- TAHAP 1: PERTANYAAN --- */
+    .heart-badge {
+      width: 70px;
+      height: 70px;
+      background: #ffe5ec;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      color: var(--primary);
+      font-size: 2rem;
+      animation: pulse 1.8s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 77, 109, 0.4); }
+      50% { transform: scale(1.08); box-shadow: 0 0 0 15px rgba(255, 77, 109, 0); }
+    }
+
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      margin-top: 35px;
+      min-height: 70px;
+    }
+
+    .btn {
+      padding: 14px 32px;
+      border-radius: 50px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-yes {
+      background: linear-gradient(135deg, #ff4d6d, #c9184a);
+      color: white;
+      box-shadow: 0 8px 20px rgba(201, 24, 74, 0.35);
+      z-index: 10;
+    }
+
+    .btn-no {
+      background: #e9ecef;
+      color: #6c757d;
+      position: absolute;
+      z-index: 99;
+      transition: opacity 0.2s ease, top 0.25s ease, left 0.25s ease;
+    }
+
+    .evasive-toast {
+      position: absolute;
+      padding: 8px 16px;
+      background: var(--primary-dark);
+      color: white;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      z-index: 999;
+      animation: floatUpFade 1.2s forwards ease-out;
+      pointer-events: none;
+    }
+
+    @keyframes floatUpFade {
+      0% { opacity: 0; transform: translateY(5px); }
+      20% { opacity: 1; transform: translateY(0); }
+      80% { opacity: 1; transform: translateY(-10px); }
+      100% { opacity: 0; transform: translateY(-20px); }
+    }
+
+    /* --- TAHAP 2: PUZZLE --- */
+    .target-board {
+      width: 280px;
+      height: 280px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 6px;
+      margin: 20px auto;
+      padding: 8px;
+      background: #fff;
+      border: 3px dashed var(--primary-light);
+      border-radius: 16px;
+    }
+
+    .drop-slot {
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 240, 243, 0.7);
+      border: 1px dashed rgba(255, 77, 109, 0.3);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .drop-slot::after {
+      content: attr(data-slot-num);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: rgba(255, 77, 109, 0.2);
+    }
+    .drop-slot.filled::after { display: none; }
+
+    .pieces-pool {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      min-height: 140px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 16px;
+    }
+
+    .puzzle-piece {
+      width: 128px;
+      height: 128px;
+      background-image: url('Foto Kita.png'); /* Menggunakan foto Anda */
+      background-size: 256px 256px;
+      border-radius: 10px;
+      cursor: grab;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+      touch-action: none;
+    }
+    .puzzle-piece[data-piece="0"] { background-position: 0px 0px; }
+    .puzzle-piece[data-piece="1"] { background-position: -128px 0px; }
+    .puzzle-piece[data-piece="2"] { background-position: 0px -128px; }
+    .puzzle-piece[data-piece="3"] { background-position: -128px -128px; }
+
+    .drop-slot .puzzle-piece {
+      width: 100%;
+      height: 100%;
+      box-shadow: none;
+      cursor: default;
+    }
+
+    /* --- TAHAP TAMBAHAN 1: VIDEO --- */
+    .video-container {
+      width: 100%;
+      max-width: 400px;
+      margin: 20px auto;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      background: #000;
+    }
+    .video-container video {
+      width: 100%;
+      display: block;
+    }
+
+    /* --- TAHAP TAMBAHAN 2 & AKHIR: GALERI --- */
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .polaroid-card {
+      background: white;
+      padding: 10px 10px 18px 10px;
+      border-radius: 14px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      transform: rotate(calc(var(--rotation, 0) * 1deg));
+    }
+    .polaroid-card:hover {
+      transform: translateY(-8px) scale(1.03) rotate(0deg) !important;
+    }
+    .polaroid-card img {
+      width: 100%;
+      height: 170px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .polaroid-caption {
+      margin-top: 10px;
+      font-size: 1.1rem;
+      color: var(--primary-dark);
+    }
+
+    .love-letter-card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 35px 30px;
+      margin: 30px 0;
+      text-align: left;
+      border: 1px solid #ffe3e8;
+      box-shadow: 0 10px 25px rgba(255, 77, 109, 0.08);
+    }
+    .love-letter-body {
+      color: #3d0c1e;
+      font-size: 1.05rem;
+      line-height: 1.8;
+      white-space: pre-line;
+    }
+
+    /* Lightbox Modal */
+    .lightbox-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .lightbox-modal.active { display: flex; }
+    .lightbox-content {
+      max-width: 450px; width: 100%;
+      background: white; border-radius: 20px;
+      padding: 15px; text-align: center; position: relative;
+    }
+    .lightbox-content img { width: 100%; border-radius: 12px; }
+    .lightbox-close {
+      position: absolute; top: -15px; right: -15px;
+      background: var(--primary); color: white;
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Layar Pembuka -->
+  <div id="splash-screen">
+    <div class="envelope-icon"><i class="fa-solid fa-envelope-open-text"></i></div>
+    <h2 style="margin-bottom: 25px;">Ada pesan untukmu... ❤️</h2>
+    <button class="btn-open" id="btn-start">Buka Pesan</button>
+  </div>
+
+  <canvas id="bg-canvas"></canvas>
+
+  <audio id="bg-music" src="Lagu Nial.mp3" loop preload="auto"></audio>
+
+  <button class="audio-control playing" id="audio-toggle" title="Putar/Hentikan Musik">
+    <i class="fa-solid fa-music"></i>
+  </button>
+
+  <div class="app-container">
+
+    <!-- TAHAP 1: PERTANYAAN -->
+    <section id="step-1" class="screen">
+      <div class="romantic-card question-box" id="card-question">
+        <div class="heart-badge"><i class="fa-solid fa-heart"></i></div>
+        <h2>Sebelum Lanjut... 🥺</h2>
+        <p>Jawab dengan jujur dari dalam hatimu ya!</p>
+        
+        <h3 style="font-size: 1.3rem; color: var(--primary-dark); margin-top: 20px;">
+          Kamu sayang sama aku gak? ❤️
+        </h3>
+
+        <div class="btn-group">
+          <button class="btn btn-yes" id="btn-yes">
+            <i class="fa-solid fa-heart-circle-check"></i> Sayang Banget! 💕
+          </button>
+          <button class="btn btn-no" id="btn-no">Enggak 😜</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAHAP 2: PUZZLE -->
+    <section id="step-2" class="screen">
+      <div class="romantic-card puzzle-box">
+        <div class="heart-badge" style="color: var(--primary-dark);"><i class="fa-solid fa-puzzle-piece"></i></div>
+        <h2>Kepingan Kenangan Kita 🧩</h2>
+        <p>Tarik & letakkan 4 kepingan puzzle di bawah ke posisinya!</p>
+
+        <div class="target-board" id="target-board">
+          <div class="drop-slot" data-slot="0" data-slot-num="1"></div>
+          <div class="drop-slot" data-slot="1" data-slot-num="2"></div>
+          <div class="drop-slot" data-slot="2" data-slot-num="3"></div>
+          <div class="drop-slot" data-slot="3" data-slot-num="4"></div>
+        </div>
+
+        <div class="pieces-pool" id="pieces-pool"></div>
+      </div>
+    </section>
+
+    <!-- TAHAP TAMBAHAN 1: VIDEO SPESIAL -->
+    <section id="step-video" class="screen">
+      <div class="romantic-card">
+        <div class="heart-badge"><i class="fa-solid fa-video"></i></div>
+        <h2>Tonton Ini Dulu Ya Sayang... 🎥</h2>
+        <p>Putar videonya sampai selesai untuk melanjutkan perjalanan kita ❤️</p>
+        
+        <div class="video-container">
+          <!-- Ganti 'video-kenangan.mp4' dengan file video Anda -->
+          <video id="special-video" controls>
+            <source src="video-kenangan.mp4" type="video/mp4">
+            Browser Anda tidak mendukung pemutaran video.
+          </video>
+        </div>
+
+        <button class="btn btn-yes" id="btn-next-video" style="margin-top: 20px; opacity: 0.5; pointer-events: none;">
+          Lanjut ke Galeri Foto <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- TAHAP TAMBAHAN 2: GALERI 8 FOTO -->
+    <section id="step-photos-8" class="screen">
+      <div class="romantic-card">
+        <h2>Galeri Kenangan Kita (1 - 8) ✨</h2>
+        <p style="font-size: 0.85rem; color: #777;">(Klik foto untuk memperbesar!)</p>
+
+        <div class="photo-grid">
+          <div class="polaroid-card" style="--rotation: -3;" onclick="openLightbox('foto-pertama.jpg', 'Pertama ❤️')">
+            <img src="foto-pertama.jpg" alt="Pertama">
+            <div class="polaroid-caption script-font">Pertama</div>
+          </div>
+          <div class="polaroid-card" style="--rotation: 2;" onclick="openLightbox('foto-kedua.jpg', 'Kedua 🌸')">
+            <img src="foto-kedua.jpg" alt="Kedua">
+            <div class="polaroid-caption script-font">Kedua</div>
+          </div>
+          <div class="polaroid-card" style="--rotation: -2;" onclick="openLightbox('foto-ketiga.jpg', 'Ketiga ✨')">
+            <img src="foto-ketiga.jpg" alt="Ketiga">
+            <div class="polaroid-caption script-font">Ketiga</div>
+          </div>
+          <div class="polaroid-card" style="--rotation: 3;" onclick="openLightbox('foto-keempat.jpg', 'Keempat 💫')">
+            <img src="foto-keempat.jpg" alt="Keempat">
+            <div class="polaroid-caption script-font">Keempat</div>
+          </div>
+          <div class="polaroid-card" style="--rotation: -1;" onclick="openLightbox('foto-kelima.jpg', 'Kelima 💖')">
+            <img src="foto-kelima.jpg" alt="Kelima">
+            <div class="polaroid-caption script-font">Kelima</div>
+          </div>
+          <div class="polaroid-card" style="--rotation: 2;" onclick="openLightbox('foto-6.jpg', 'Ke-6 🥰')">
+            <img src="foto-6.jpg" alt="6">
+            <div class="polaroid-caption script-font">6</div>
+          </div>
+          <div class="polaroid-card" style="--rotation: -3;" onclick="openLightbox('foto-7.jpg', 'Ke-7 🌹')">
+            <img src="foto-7.jpg" alt="7">
+            <div class="polaroid-caption script-font">7</div>
+          </div>
+          <div class="polaroid-card" style="--rotation: 1;" onclick="openLightbox('foto-8.jpg', 'Ke-8 🌟')">
+            <img src="foto-8.jpg" alt="8">
+            <div class="polaroid-caption script-font">8</div>
+          </div>
+        </div>
+
+        <button class="btn btn-yes" id="btn-next-gallery" style="margin-top: 30px;">
+          Buka Pesan & Kejutan Terakhir <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- TAHAP AKHIR: PESAN & GALERI FOTO 9-11 -->
+    <section id="step-final" class="screen">
+      <div class="romantic-card">
+        <h1 style="font-size: 2.2rem;">Happy Girlfriend Day, My Love! 🌹✨</h1>
+        
+        <div class="love-letter-card">
+          <div class="love-letter-body">
+<strong>Untuk Kamu, Alasan Di Balik Setiap Senyumku ❤️</strong>
+
+Tidak terasa, sudah 2 tahun kita melangkah bersama, melewati setiap tawa, pelukan, dan cerita di dalam hari-hari kita. Waktu berjalan begitu cepat ketika aku bersamamu, tetapi setiap detiknya terasa begitu bermakna. Kamu bukan sekadar kekasih, tapi rumah bagi hatiku—tempat di mana aku selalu menemukan kedamaian, dukungan, dan kebahagiaan sejati.
+
+Sama seperti puzzle dan kenangan indah kita sebelumnya, kamu adalah kepingan terindah yang menyempurnakan hidupku. Tanpamu, ada bagian dari diriku yang merasa kurang. Terima kasih sudah dengan sabar membersamai, mencintai, dan menguatkan aku selama dua tahun ini, sayangku Meutya Salshabilla.
+
+Perjalanan kita memang masih panjang, dan doaku di setiap sujudku sederhana: semoga kita terus diberikan kebersamaan, melangkah ke jenjang yang lebih serius, dan suatu hari nanti aku bisa memanggilmu istriku serta hidup membersamamu selamanya.
+
+<em>I love you more than words can express, now and forever! 💕✨</em>
+          </div>
+        </div>
+
+        <h2 class="script-font" style="font-size: 2rem; margin-top: 30px;">Galeri Spesial (Foto 9 - 11) ✨</h2>
+        <p style="font-size: 0.85rem; color: #777;">(Klik foto untuk memperbesar!)</p>
+
+        <div class="photo-grid">
+          <div class="polaroid-card" style="--rotation: -2;" onclick="openLightbox('foto-9.jpg', 'Ke-9 🌸')">
+            <img src="foto-9.jpg" alt="9">
+            <div class="polaroid-caption script-font">Ke-9 🌸</div>
+          </div>
+          <div class="polaroid-card" style="--rotation: 3;" onclick="openLightbox('foto-10.jpg', 'Ke-10 💫')">
+            <img src="foto-10.jpg" alt="10">
+            <div class="polaroid-caption script-font">Ke-10 💫</div>
+          </div>
+          <div class="polaroid-card" style="--rotation: -2;" onclick="openLightbox('foto-11.jpg', 'Ke-11 ❤️')">
+            <img src="foto-11.jpg" alt="11">
+            <div class="polaroid-caption script-font">Ke-11 ❤️</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="lightbox-modal" id="lightbox">
+    <div class="lightbox-content">
+      <div class="lightbox-close" onclick="closeLightbox()">&times;</div>
+      <img id="lightbox-img" src="">
+      <div id="lightbox-caption" class="script-font" style="font-size: 1.5rem; margin-top: 10px; color: var(--primary-dark);"></div>
+    </div>
+  </div>
+
+  <script>
+    // --- ANIMASI PARTIKEL BACKGROUND ---
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resizeCanvas); resizeCanvas();
+
+    class HeartParticle {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * canvas.width; this.y = canvas.height + Math.random() * 50;
+        this.size = Math.random() * 10 + 6; this.speedY = Math.random() * 1.2 + 0.6;
+        this.speedX = Math.sin(Math.random() * Math.PI) * 0.6; this.opacity = Math.random() * 0.5 + 0.3;
+        this.color = `hsla(${Math.random() * 20 + 340}, 100%, 70%, ${this.opacity})`;
+      }
+      update() {
+        this.y -= this.speedY; this.x += this.speedX;
+        if (this.y < -20) this.reset();
+      }
+      draw() {
+        ctx.save(); ctx.translate(this.x, this.y); ctx.fillStyle = this.color; ctx.beginPath();
+        const d = this.size; ctx.moveTo(0, 0); ctx.bezierCurveTo(-d/2, -d/2, -d, d/3, 0, d);
+        ctx.bezierCurveTo(d, d/3, d/2, -d/2, 0, 0); ctx.fill(); ctx.restore();
+      }
+    }
+    for (let i = 0; i < 25; i++) particles.push(new HeartParticle());
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate);
+    }
+    animate();
+
+    // --- SCRIPT SPLASH SCREEN & AUDIO ---
+    const audio = document.getElementById('bg-music');
+    const audioBtn = document.getElementById('audio-toggle');
+    const splashScreen = document.getElementById('splash-screen');
+    const step1 = document.getElementById('step-1');
+
+    document.getElementById('btn-start').addEventListener('click', () => {
+      audio.play();
+      audioBtn.classList.add('playing');
+      audioBtn.style.display = 'flex';
+      
+      splashScreen.style.opacity = '0';
+      splashScreen.style.transform = 'translateY(-20px)';
+      
+      setTimeout(() => {
+        splashScreen.style.display = 'none';
+        step1.classList.add('active');
+        initEvasiveButtonPos();
+      }, 800);
+    });
+
+    audioBtn.addEventListener('click', () => {
+      if (audio.paused) { audio.play(); audioBtn.classList.add('playing'); } 
+      else { audio.pause(); audioBtn.classList.remove('playing'); }
+    });
+
+    // --- SCRIPT TOMBOL "ENGGAK" ---
+    const btnNo = document.getElementById('btn-no');
+    const btnYes = document.getElementById('btn-yes');
+    const cardQuestion = document.getElementById('card-question');
+    const TRIGGER_DISTANCE = 100;
+    const evasivePhrases = ["Eits, gak bisa! 😜", "Yakin enggak? 🤪", "Tombol ini jahil lho! ❤️"];
+
+    function initEvasiveButtonPos() {
+      btnNo.style.position = 'relative';
+      btnNo.style.left = 'auto';
+      btnNo.style.top = 'auto';
+    }
+
+    function moveEvasiveButton() {
+      const padding = 25;
+      const cardRect = cardQuestion.getBoundingClientRect();
+      const btnWidth = btnNo.offsetWidth || 100;
+      const btnHeight = btnNo.offsetHeight || 40;
+
+      const maxX = cardRect.width - btnWidth - padding;
+      const maxY = cardRect.height - btnHeight - padding;
+
+      const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
+      const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
+
+      btnNo.style.position = 'absolute';
+      btnNo.style.left = `${randomX}px`;
+      btnNo.style.top = `${randomY}px`;
+      
+      showToast(randomX, randomY);
+    }
+
+    function showToast(x, y) {
+      const toast = document.createElement('div');
+      toast.className = 'evasive-toast';
+      toast.innerText = evasivePhrases[Math.floor(Math.random() * evasivePhrases.length)];
+      toast.style.left = `${x}px`;
+      toast.style.top = `${Math.max(y - 35, 10)}px`;
+      cardQuestion.appendChild(toast);
+      setTimeout(() => toast.remove(), 1000);
+    }
+
+    document.addEventListener('mousemove', (e) => {
+      if (!step1.classList.contains('active')) return;
+      
+      const rect = btnNo.getBoundingClientRect();
+      const distance = Math.hypot(e.clientX - (rect.left + rect.width / 2), e.clientY - (rect.top + rect.height / 2));
+
+      if (distance < TRIGGER_DISTANCE) {
+        btnNo.style.opacity = '0';
+        btnNo.style.pointerEvents = 'none';
+        moveEvasiveButton();
+      } else {
+        btnNo.style.opacity = '1';
+        btnNo.style.pointerEvents = 'auto';
+      }
+    });
+
+    btnNo.addEventListener('touchstart', (e) => { e.preventDefault(); moveEvasiveButton(); });
+
+    btnYes.addEventListener('click', () => { switchScreen('step-1', 'step-2'); initPuzzle(); });
+
+    // --- SCRIPT PUZZLE ---
+    const piecesPool = document.getElementById('pieces-pool');
+    let filledSlotsCount = 0;
+
+    function initPuzzle() {
+      piecesPool.innerHTML = ''; filledSlotsCount = 0;
+      const indices = [0, 1, 2, 3].sort(() => Math.random() - 0.5);
+
+      indices.forEach(idx => {
+        const piece = document.createElement('div'); piece.className = 'puzzle-piece';
+        piece.setAttribute('draggable', 'true'); piece.setAttribute('data-piece', idx); piece.id = `piece-${idx}`;
+        piece.addEventListener('dragstart', (e) => e.dataTransfer.setData('text/plain', idx));
+        piece.addEventListener('touchstart', handleTouchStart, { passive: false });
+        piece.addEventListener('touchmove', handleTouchMove, { passive: false });
+        piece.addEventListener('touchend', handleTouchEnd);
+        piecesPool.appendChild(piece);
+      });
+
+      document.querySelectorAll('.drop-slot').forEach(slot => {
+        slot.classList.remove('filled'); slot.innerHTML = '';
+        slot.addEventListener('dragover', (e) => e.preventDefault());
+        slot.addEventListener('drop', (e) => {
+          e.preventDefault(); checkAndPlacePiece(slot, document.querySelector(`.puzzle-piece[data-piece="${e.dataTransfer.getData('text/plain')}"]`));
+        });
+      });
+    }
+
+    let activePiece = null, offsetX = 0, offsetY = 0, originalParent = null;
+    function handleTouchStart(e) {
+      e.preventDefault(); activePiece = e.currentTarget; originalParent = activePiece.parentElement;
+      const rect = activePiece.getBoundingClientRect(); offsetX = e.touches[0].clientX - rect.left; offsetY = e.touches[0].clientY - rect.top;
+      activePiece.style.position = 'fixed'; activePiece.style.zIndex = '1000';
+    }
+    function handleTouchMove(e) {
+      if (!activePiece) return;
+      activePiece.style.left = `${e.touches[0].clientX - offsetX}px`; activePiece.style.top = `${e.touches[0].clientY - offsetY}px`;
+    }
+    function handleTouchEnd(e) {
+      if (!activePiece) return;
+      activePiece.style.display = 'none';
+      const slot = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY)?.closest('.drop-slot');
+      activePiece.style.display = 'block';
+      activePiece.style.position = 'relative'; activePiece.style.left = 'auto'; activePiece.style.top = 'auto'; activePiece.style.zIndex = '10';
+      if (slot) checkAndPlacePiece(slot, activePiece); else originalParent.appendChild(activePiece);
+      activePiece = null;
+    }
+    function checkAndPlacePiece(slot, pieceElem) {
+      if (!pieceElem) return;
+      if (slot.getAttribute('data-slot') === pieceElem.getAttribute('data-piece') && !slot.classList.contains('filled')) {
+        slot.appendChild(pieceElem); slot.classList.add('filled'); pieceElem.setAttribute('draggable', 'false');
+        // Setelah puzzle selesai, lanjut ke halaman video (step-video)
+        if (++filledSlotsCount === 4) setTimeout(() => switchScreen('step-2', 'step-video'), 800);
+      } else { piecesPool.appendChild(pieceElem); }
+    }
+
+    // --- SCRIPT VIDEO & NAVIGASI LANJUTAN ---
+    const specialVideo = document.getElementById('special-video');
+    const btnNextVideo = document.getElementById('btn-next-video');
+
+    specialVideo.addEventListener('play', () => {
+      // Aktifkan tombol lanjut begitu video mulai diputar atau selesai
+      btnNextVideo.style.opacity = '1';
+      btnNextVideo.style.pointerEvents = 'auto';
+    });
+
+    specialVideo.addEventListener('ended', () => {
+      btnNextVideo.style.opacity = '1';
+      btnNextVideo.style.pointerEvents = 'auto';
+    });
+
+    btnNextVideo.addEventListener('click', () => {
+      switchScreen('step-video', 'step-photos-8');
+    });
+
+    document.getElementById('btn-next-gallery').addEventListener('click', () => {
+      switchScreen('step-photos-8', 'step-final');
+    });
+
+    function switchScreen(fromId, toId) {
+      const fromScreen = document.getElementById(fromId); const toScreen = document.getElementById(toId);
+      fromScreen.style.opacity = '0';
+      setTimeout(() => { fromScreen.classList.remove('active'); toScreen.classList.add('active'); window.scrollTo({ top: 0, behavior: 'smooth' }); }, 500);
+    }
+    function openLightbox(imgSrc, caption) { document.getElementById('lightbox-img').src = imgSrc; document.getElementById('lightbox-caption').innerText = caption; document.getElementById('lightbox').classList.add('active'); }
+    function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); }
+  </script>
+</body>
+</html>
