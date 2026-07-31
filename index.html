@@ -663,17 +663,15 @@ Perjalanan kita memang masih panjang, dan doaku di setiap sujudku sederhana: sem
     prevSongBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       loadSong(currentSongIndex - 1);
-      if (!audio.paused) {
-        audio.play();
-      }
+      audio.play().catch(err => console.log(err));
+      audioBtn.classList.add('playing');
     });
 
     nextSongBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       loadSong(currentSongIndex + 1);
-      if (!audio.paused) {
-        audio.play();
-      }
+      audio.play().catch(err => console.log(err));
+      audioBtn.classList.add('playing');
     });
 
     document.getElementById('btn-start').addEventListener('click', () => {
