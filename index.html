@@ -52,29 +52,79 @@
       pointer-events: none;
     }
 
-    .audio-control {
+    /* --- AUDIO CONTROLS WIDGET --- */
+    .audio-widget {
       position: fixed;
       top: 20px;
       right: 20px;
       z-index: 1000;
+      display: none;
+      align-items: center;
       background: rgba(255, 255, 255, 0.9);
       border: 1px solid var(--glass-border);
-      width: 48px;
-      height: 48px;
+      border-radius: 30px;
+      padding: 5px 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      gap: 8px;
+    }
+
+    .audio-btn {
+      background: none;
+      border: none;
+      color: var(--primary-dark);
+      font-size: 1rem;
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       border-radius: 50%;
-      display: none;
+      transition: background 0.2s;
+    }
+
+    .audio-btn:hover {
+      background: rgba(255, 77, 109, 0.1);
+    }
+
+    .audio-control {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
       align-items: center;
       justify-content: center;
       color: var(--primary-dark);
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       cursor: pointer;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      background: #fff;
+      border: 1px solid var(--glass-border);
       transition: all 0.3s ease;
     }
 
     .audio-control.playing {
       background: var(--primary);
       color: white;
+    }
+
+    .song-title-tooltip {
+      position: absolute;
+      top: 65px;
+      right: 20px;
+      background: rgba(43, 45, 66, 0.85);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .audio-widget:hover + .song-title-tooltip,
+    .audio-widget:active + .song-title-tooltip {
+      opacity: 1;
     }
 
     /* --- LAYAR PEMBUKA (SPLASH SCREEN) --- */
@@ -289,7 +339,7 @@
     .puzzle-piece {
       width: 128px;
       height: 128px;
-      background-image: url('Foto Kita.png'); /* Menggunakan foto Anda */
+      background-image: url('Foto Kita.png');
       background-size: 256px 256px;
       border-radius: 10px;
       cursor: grab;
@@ -408,11 +458,17 @@
 
   <canvas id="bg-canvas"></canvas>
 
-  <audio id="bg-music" src="Lagu Nial.mp3" loop preload="auto"></audio>
+  <audio id="bg-music" preload="auto"></audio>
 
-  <button class="audio-control playing" id="audio-toggle" title="Putar/Hentikan Musik">
-    <i class="fa-solid fa-music"></i>
-  </button>
+  <!-- Widget Kontrol Musik dengan Tombol Ganti Lagu (Kiri & Kanan) -->
+  <div class="audio-widget" id="audio-widget">
+    <button class="audio-btn" id="prev-song-btn" title="Lagu Sebelumnya"><i class="fa-solid fa-backward-step"></i></button>
+    <div class="audio-control" id="audio-toggle" title="Putar/Hentikan Musik">
+      <i class="fa-solid fa-music"></i>
+    </div>
+    <button class="audio-btn" id="next-song-btn" title="Lagu Selanjutnya"><i class="fa-solid fa-forward-step"></i></button>
+  </div>
+  <div class="song-title-tooltip" id="song-title-tooltip">Memuat lagu...</div>
 
   <div class="app-container">
 
@@ -462,7 +518,6 @@
         <p>Putar videonya sampai selesai untuk melanjutkan perjalanan kita ❤️</p>
         
         <div class="video-container">
-          <!-- Ganti 'video-kenangan.mp4' dengan file video Anda -->
           <video id="special-video" controls>
             <source src="Untuk Kamu.mp4" type="video/mp4">
             Browser Anda tidak mendukung pemutaran video.
@@ -572,6 +627,80 @@ Perjalanan kita memang masih panjang, dan doaku di setiap sujudku sederhana: sem
   </div>
 
   <script>
+    // --- DAFTAR LAGI (Ganti nama file sesuai file audio kamu) ---
+    const playlist = [
+      { src: "Lagu Nial.mp3", title: "Lagu 1: Lagu Nial" },
+      { src: "Lagu Nial 2.mp3", title: "Lagu 2: Romantis" },
+      { src: "lagu Nial 3.mp3", title: "Lagu 3: Cinta Kita" },
+      { src: "lagu Nial 4.mp3", title: "Lagu 4: Our Memories" },
+      { src: "lagu Nial 5.mp3", title: "Lagu 5: Forever Yours" }
+    ];
+    let currentSongIndex = 0;
+
+    const audio = document.getElementById('bg-music');
+    const audioBtn = document.getElementById('audio-toggle');
+    const prevSongBtn = document.getElementById('prev-song-btn');
+    const nextSongBtn = document.getElementById('next-song-btn');
+    const audioWidget = document.getElementById('audio-widget');
+    const songTitleTooltip = document.getElementById('song-title-tooltip');
+    const splashScreen = document.getElementById('splash-screen');
+    const step1 = document.getElementById('step-1');
+
+    function loadSong(index) {
+      currentSongIndex = (index + playlist.length) % playlist.length;
+      audio.src = playlist[currentSongIndex].src;
+      songTitleTooltip.innerText = playlist[currentSongIndex].title;
+    }
+
+    loadSong(currentSongIndex);
+
+    // Otomatis lanjut ke lagu berikutnya kalau habis
+    audio.addEventListener('ended', () => {
+      loadSong(currentSongIndex + 1);
+      audio.play();
+    });
+
+    prevSongBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      loadSong(currentSongIndex - 1);
+      if (!audio.paused) {
+        audio.play();
+      }
+    });
+
+    nextSongBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      loadSong(currentSongIndex + 1);
+      if (!audio.paused) {
+        audio.play();
+      }
+    });
+
+    document.getElementById('btn-start').addEventListener('click', () => {
+      audio.play().catch(e => console.log(e));
+      audioBtn.classList.add('playing');
+      audioWidget.style.display = 'flex';
+      
+      splashScreen.style.opacity = '0';
+      splashScreen.style.transform = 'translateY(-20px)';
+      
+      setTimeout(() => {
+        splashScreen.style.display = 'none';
+        step1.classList.add('active');
+        initEvasiveButtonPos();
+      }, 800);
+    });
+
+    audioBtn.addEventListener('click', () => {
+      if (audio.paused) { 
+        audio.play(); 
+        audioBtn.classList.add('playing'); 
+      } else { 
+        audio.pause(); 
+        audioBtn.classList.remove('playing'); 
+      }
+    });
+
     // --- ANIMASI PARTIKEL BACKGROUND ---
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
@@ -603,32 +732,6 @@ Perjalanan kita memang masih panjang, dan doaku di setiap sujudku sederhana: sem
       particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate);
     }
     animate();
-
-    // --- SCRIPT SPLASH SCREEN & AUDIO ---
-    const audio = document.getElementById('bg-music');
-    const audioBtn = document.getElementById('audio-toggle');
-    const splashScreen = document.getElementById('splash-screen');
-    const step1 = document.getElementById('step-1');
-
-    document.getElementById('btn-start').addEventListener('click', () => {
-      audio.play();
-      audioBtn.classList.add('playing');
-      audioBtn.style.display = 'flex';
-      
-      splashScreen.style.opacity = '0';
-      splashScreen.style.transform = 'translateY(-20px)';
-      
-      setTimeout(() => {
-        splashScreen.style.display = 'none';
-        step1.classList.add('active');
-        initEvasiveButtonPos();
-      }, 800);
-    });
-
-    audioBtn.addEventListener('click', () => {
-      if (audio.paused) { audio.play(); audioBtn.classList.add('playing'); } 
-      else { audio.pause(); audioBtn.classList.remove('playing'); }
-    });
 
     // --- SCRIPT TOMBOL "ENGGAK" ---
     const btnNo = document.getElementById('btn-no');
@@ -742,7 +845,6 @@ Perjalanan kita memang masih panjang, dan doaku di setiap sujudku sederhana: sem
       if (!pieceElem) return;
       if (slot.getAttribute('data-slot') === pieceElem.getAttribute('data-piece') && !slot.classList.contains('filled')) {
         slot.appendChild(pieceElem); slot.classList.add('filled'); pieceElem.setAttribute('draggable', 'false');
-        // Setelah puzzle selesai, lanjut ke halaman video (step-video)
         if (++filledSlotsCount === 4) setTimeout(() => switchScreen('step-2', 'step-video'), 800);
       } else { piecesPool.appendChild(pieceElem); }
     }
@@ -752,7 +854,6 @@ Perjalanan kita memang masih panjang, dan doaku di setiap sujudku sederhana: sem
     const btnNextVideo = document.getElementById('btn-next-video');
 
     specialVideo.addEventListener('play', () => {
-      // Aktifkan tombol lanjut begitu video mulai diputar atau selesai
       btnNextVideo.style.opacity = '1';
       btnNextVideo.style.pointerEvents = 'auto';
     });
